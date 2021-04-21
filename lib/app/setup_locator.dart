@@ -1,12 +1,38 @@
-
+import 'package:domain/domain.dart';
+import 'package:data/data.dart';
+import 'package:fl_blueprint/services/dialog_service.dart';
+import 'package:fl_blueprint/services/navigation_service.dart';
+import 'package:fl_blueprint/view_models/cards_viewmodel.dart';
+import 'package:fl_blueprint/view_models/components_viewmodel.dart';
 import 'package:get_it/get_it.dart';
-import 'package:stacked_services/stacked_services.dart';
-import 'package:stacked_themes/stacked_themes.dart';
 
 GetIt locator = GetIt.instance;
 
 Future setupLocator() async {
   locator.registerLazySingleton(() => NavigationService());
-  locator.registerLazySingleton(() => DialogService());
-  locator.registerSingleton(ThemeService.getInstance());
+
+  // Respositories and Data sources
+  locator.registerFactory<ICardsDataSource>(() => LocalCardsDataSourceImpl());
+  locator.registerLazySingleton<CardsRespository>(
+      () => CardsRepositoryImpl(locator()));
+  locator.registerFactory<IComponentsDataSource>(() => LocalComponentsDataSourceImpl());
+  locator.registerLazySingleton<ComponentsRespository>(
+      () => ComponentsRepositoryImpl(locator()));
+
+  // Services
+  locator.registerLazySingleton<IDialogService>(() => DialogService(locator()));
+
+  setupUseCases();
+
+  setupViewModels();
+}
+
+void setupUseCases() {
+  locator.registerFactory(() => FetchCardsUseCase(locator()));
+  locator.registerFactory(() => FetchComponentsUseCase(locator()));
+}
+
+void setupViewModels() {
+  locator.registerFactory(() => CardsViewModel(locator(), locator(), locator()));
+  locator.registerFactory(() => ComponentsViewModel(locator(), locator(), locator()));
 }
