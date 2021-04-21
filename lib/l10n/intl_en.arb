@@ -1,8 +1,0 @@
-{
-  "@@locale": "en",
-  "title": "Flutter Example App",
-  "@title": {
-    "type": "text",
-    "placeholders": {}
-  }
-}
